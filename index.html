@@ -17,9 +17,10 @@
 
         .scoreboard-container {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 1000px;
+            width: 90%;
+            max-width: 600px;
             background-color: #333;
             border-radius: 10px;
             overflow: hidden;
@@ -27,7 +28,7 @@
         }
 
         .sponsor-logo {
-            width: 20%;
+            width: 100%;
             background-color: #444;
             display: flex;
             align-items: center;
@@ -40,13 +41,19 @@
             max-height: 80px;
         }
 
-        .score-section {
+        .team-section {
             display: flex;
-            width: 80%;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
             padding: 10px 20px;
             background: linear-gradient(145deg, #666, #222);
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .team-section:last-child {
+            margin-bottom: 0;
         }
 
         .team {
@@ -58,7 +65,6 @@
         .team-logo {
             width: 50px;
             height: 50px;
-            border-radius: 50%;
             border: 2px solid #fff;
         }
 
@@ -66,6 +72,15 @@
             font-size: 1.8em;
             color: #fff;
             font-weight: bold;
+            cursor: pointer;
+        }
+
+        .team-name input {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #000;
+            border: none;
+            width: 100%;
         }
 
         .score {
@@ -74,11 +89,29 @@
             color: #fff;
             padding: 5px 20px;
             border-radius: 5px;
-            background-color: #004d00; /* Green background for score */
+            background-color: #004d00;
+            min-width: 70px;
+            text-align: center;
         }
 
-        .score.other {
-            background-color: #333;
+        .controls {
+            margin-top: 20px;
+        }
+
+        .controls button {
+            font-size: 1em;
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            background-color: #007bff;
+            transition: background-color 0.3s ease;
+        }
+
+        .controls button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -86,35 +119,75 @@
     <div class="scoreboard-container">
         <!-- Sponsor Section -->
         <div class="sponsor-logo">
-            <img src="sponsor-logo.png" alt="Sponsor Logo">
+            <img id="sponsor-img" src="sponsor-logo.png" alt="Sponsor Logo">
         </div>
 
-        <!-- Score Section -->
-        <div class="score-section">
-            <!-- Team A -->
+        <!-- Team A Section -->
+        <div class="team-section">
             <div class="team">
-                <img src="team1-logo.png" alt="Team A Logo" class="team-logo">
-                <div class="team-name">NOVA 16s</div>
+                <img id="team1-logo" src="team1-logo.png" alt="Team A Logo" class="team-logo">
+                <div id="team1-name" class="team-name" onclick="editTeamName('team1-name')">NOVA 16s</div>
             </div>
             <div id="score1" class="score">2</div>
+        </div>
 
-            <!-- Team B -->
-            <div id="score2" class="score other">1</div>
+        <!-- Team B Section -->
+        <div class="team-section">
             <div class="team">
-                <img src="team2-logo.png" alt="Team B Logo" class="team-logo">
-                <div class="team-name">Beauty2Beast</div>
+                <img id="team2-logo" src="team2-logo.png" alt="Team B Logo" class="team-logo">
+                <div id="team2-name" class="team-name" onclick="editTeamName('team2-name')">Beauty2Beast</div>
             </div>
+            <div id="score2" class="score">1</div>
         </div>
     </div>
 
+    <!-- Controls Section -->
+    <div class="controls">
+        <button onclick="updateScore('team1', 1)">+1 Team A</button>
+        <button onclick="updateScore('team1', -1)">-1 Team A</button>
+        <button onclick="updateScore('team2', 1)">+1 Team B</button>
+        <button onclick="updateScore('team2', -1)">-1 Team B</button>
+    </div>
+
     <script>
-        // Script for updating scores dynamically
+        // Function to update scores dynamically
         function updateScore(team, delta) {
             const scoreElement = document.getElementById('score' + (team === 'team1' ? 1 : 2));
             let currentScore = parseInt(scoreElement.innerText);
             currentScore = Math.max(0, currentScore + delta); // Prevent negative scores
             scoreElement.innerText = currentScore;
         }
+
+        // Function to edit team names
+        function editTeamName(elementId) {
+            const teamNameElement = document.getElementById(elementId);
+            const currentName = teamNameElement.innerText;
+
+            // Replace the team name with an input field for editing
+            teamNameElement.innerHTML = `<input type="text" value="${currentName}" onblur="saveTeamName('${elementId}', this)" autofocus>`;
+        }
+
+        // Function to save the updated team name
+        function saveTeamName(elementId, inputElement) {
+            const newName = inputElement.value;
+            document.getElementById(elementId).innerHTML = newName;
+        }
+
+        // Function to hide logos if no image source is provided
+        function hideEmptyImages() {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.onerror = () => img.style.display = 'none'; // Hide image if it fails to load
+                if (!img.src || img.src.endsWith('placeholder.png')) {
+                    img.style.display = 'none';
+                } else {
+                    img.style.display = 'block';
+                }
+            });
+        }
+
+        // Run the function on page load
+        window.onload = hideEmptyImages;
     </script>
 </body>
 </html>
