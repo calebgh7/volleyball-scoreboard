@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volleyball Scoreboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .scoreboard-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 90%;
+            max-width: 800px;
+            border: 3px solid #fff;
+            padding: 20px;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #444, #222);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+        }
+        .team {
+            text-align: center;
+            padding: 10px;
+        }
+        .team-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            margin-bottom: 10px;
+        }
+        .team-name {
+            font-size: 1.5em;
+            margin: 5px 0;
+        }
+        .score {
+            font-size: 3em;
+            font-weight: bold;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .controls button {
+            font-size: 1em;
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            background-color: #007bff;
+            transition: background-color 0.3s ease;
+        }
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="scoreboard-container">
+        <div class="team">
+            <img src="team1-logo.png" alt="Team A Logo" class="team-logo">
+            <div class="team-name">Team A</div>
+            <div id="score1" class="score">0</div>
+        </div>
+        <div class="team">
+            <img src="team2-logo.png" alt="Team B Logo" class="team-logo">
+            <div class="team-name">Team B</div>
+            <div id="score2" class="score">0</div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="updateScore('team1', 1)">+1 Team A</button>
+        <button onclick="updateScore('team1', -1)">-1 Team A</button>
+        <button onclick="updateScore('team2', 1)">+1 Team B</button>
+        <button onclick="updateScore('team2', -1)">-1 Team B</button>
+    </div>
+
+    <script>
+        function updateScore(team, delta) {
+            const scoreElement = document.getElementById('score' + (team === 'team1' ? 1 : 2));
+            let currentScore = parseInt(scoreElement.innerText);
+            currentScore = Math.max(0, currentScore + delta); // Prevent negative scores
+            scoreElement.innerText = currentScore;
+        }
+    </script>
+</body>
+</html>
