@@ -8,7 +8,7 @@
         body {
             margin: 0;
             font-family: 'Arial', sans-serif;
-            background-color: #222;
+            background-color: #22222200;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,15 +21,15 @@
             align-items: center;
             width: 90%;
             max-width: 800px;
-            background-color: #333;
+            background-color: #333333;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
         }
 
         .sponsor-logo {
-            width: 20%;
-            background-color: #444;
+            width: 10%;
+            background-color: #44444400;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -64,12 +64,12 @@
 
         /* Solid colors for each team */
         .team-section.team1 {
-            background-color: #4a90e2; /* Blue for Team A */
+            background-color: #9682EB; /* Blue for Team A */
             color: #fff;
         }
 
         .team-section.team2 {
-            background-color: #50c878; /* Green for Team B */
+            background-color: #040404; /* Green for Team B */
             color: #fff;
         }
 
@@ -80,18 +80,19 @@
         }
 
         .team-logo {
-            width: 50px;
-            height: 50px;
+            max-height: 50px;
+            max-width: 80px;
+            object-fit: contain;
         }
 
         .team-name {
-            font-size: 1.8em;
+            font-size: 2.3em;
             font-weight: bold;
             color: #fff;
         }
 
         .score {
-            font-size: 2.5em;
+            font-size: 3.1em;
             font-weight: bold;
             color: #fff;
             padding: 5px 20px;
@@ -153,7 +154,7 @@
             <!-- Team B Section -->
             <div class="team-section team2">
                 <div class="team">
-                    <img id="team2-logo" src="team2-logo.png" alt="Team B Logo" class="team-logo">
+                    <img id="team2-logo" src="team2-logo.png" alt="" class="team-logo">
                     <div id="team2-name" class="team-name">Team B</div>
                 </div>
                 <div id="score2" class="score">0</div>
