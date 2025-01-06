@@ -64,12 +64,12 @@
 
         /* Solid colors for each team */
         .team-section.team1 {
-            background-color: #9682EB; /* Blue for Team A */
+            background-color: #4a90e2; /* Blue for Team A */
             color: #fff;
         }
 
         .team-section.team2 {
-            background-color: #1a1c1b; /* Green for Team B */
+            background-color: #50c878; /* Green for Team B */
             color: #fff;
         }
 
@@ -82,21 +82,12 @@
         .team-logo {
             width: 50px;
             height: 50px;
-            border: 2px solid #fff;
         }
 
         .team-name {
             font-size: 1.8em;
             font-weight: bold;
-            cursor: pointer;
-        }
-
-        .team-name input {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #000;
-            border: none;
-            width: 100%;
+            color: #fff;
         }
 
         .score {
@@ -111,15 +102,21 @@
 
         .controls {
             margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .controls button {
+        .controls button,
+        .controls input[type="text"] {
             font-size: 1em;
-            margin: 5px;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+        }
+
+        .controls button {
             color: #fff;
             background-color: #007bff;
             transition: background-color 0.3s ease;
@@ -128,13 +125,18 @@
         .controls button:hover {
             background-color: #0056b3;
         }
+
+        .controls input[type="text"] {
+            width: 100%;
+            max-width: 300px;
+        }
     </style>
 </head>
 <body>
     <div class="scoreboard-container">
         <!-- Sponsor Section -->
         <div class="sponsor-logo">
-            <img id="sponsor-img" src="sponsor-logo.png" alt="Sponsor Logo">
+            <img id="sponsor-img" src="HP.jpg" alt="Sponsor Logo">
         </div>
 
         <!-- Score Section -->
@@ -142,8 +144,8 @@
             <!-- Team A Section -->
             <div class="team-section team1">
                 <div class="team">
-                    <img id="team1-logo" src="team1-logo.png" alt="Team A Logo" class="team-logo">
-                    <div id="team1-name" class="team-name" onclick="editTeamName('team1-name')">NOVA 16s</div>
+                    <img id="team1-logo" src="star.png" alt="Team A Logo" class="team-logo">
+                    <div id="team1-name" class="team-name">Team A</div>
                 </div>
                 <div id="score1" class="score">0</div>
             </div>
@@ -152,7 +154,7 @@
             <div class="team-section team2">
                 <div class="team">
                     <img id="team2-logo" src="team2-logo.png" alt="Team B Logo" class="team-logo">
-                    <div id="team2-name" class="team-name" onclick="editTeamName('team2-name')">Beauty2Beast</div>
+                    <div id="team2-name" class="team-name">Team B</div>
                 </div>
                 <div id="score2" class="score">0</div>
             </div>
@@ -161,10 +163,23 @@
 
     <!-- Controls Section -->
     <div class="controls">
-        <button onclick="updateScore('team1', 1)">+1 Team A</button>
-        <button onclick="updateScore('team1', -1)">-1 Team A</button>
-        <button onclick="updateScore('team2', 1)">+1 Team B</button>
-        <button onclick="updateScore('team2', -1)">-1 Team B</button>
+        <!-- Team Name Inputs -->
+        <div>
+            <label for="team1-input">Team A Name:</label>
+            <input type="text" id="team1-input" placeholder="Enter Team A Name" oninput="updateTeamName('team1', this.value)">
+        </div>
+        <div>
+            <label for="team2-input">Team B Name:</label>
+            <input type="text" id="team2-input" placeholder="Enter Team B Name" oninput="updateTeamName('team2', this.value)">
+        </div>
+
+        <!-- Score Adjustment Buttons -->
+        <div>
+            <button onclick="updateScore('team1', 1)">+1 Team A</button>
+            <button onclick="updateScore('team1', -1)">-1 Team A</button>
+            <button onclick="updateScore('team2', 1)">+1 Team B</button>
+            <button onclick="updateScore('team2', -1)">-1 Team B</button>
+        </div>
     </div>
 
     <script>
@@ -176,19 +191,10 @@
             scoreElement.innerText = currentScore;
         }
 
-        // Function to edit team names
-        function editTeamName(elementId) {
-            const teamNameElement = document.getElementById(elementId);
-            const currentName = teamNameElement.innerText;
-
-            // Replace the team name with an input field for editing
-            teamNameElement.innerHTML = `<input type="text" value="${currentName}" onblur="saveTeamName('${elementId}', this)" autofocus>`;
-        }
-
-        // Function to save the updated team name
-        function saveTeamName(elementId, inputElement) {
-            const newName = inputElement.value;
-            document.getElementById(elementId).innerHTML = newName;
+        // Function to update team names based on user input
+        function updateTeamName(team, newName) {
+            const teamNameElement = document.getElementById(team + '-name');
+            teamNameElement.innerText = newName || (team === 'team1' ? 'Team A' : 'Team B');
         }
 
         // Function to hide logos if no image source is provided
