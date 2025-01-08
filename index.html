@@ -101,6 +101,13 @@
             text-align: center;
         }
 
+        .set-count {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #fff;
+        }
+        
         .controls {
             margin-top: 20px;
             display: flex;
@@ -181,11 +188,27 @@
             <button onclick="updateScore('team2', 1)">+1 Team B</button>
             <button onclick="updateScore('team2', -1)">-1 Team B</button>
         </div>
+
+        <!-- Set Count Adjustment Buttons -->
+        <div>
+            <button onclick="updateSetCount('team1', 1)">+1 Set Team A</button>
+            <button onclick="updateSetCount('team1', -1)">-1 Set Team A</button>
+            <button onclick="updateSetCount('team2', 1)">+1 Set Team B</button>
+            <button onclick="updateSetCount('team2', -1)">-1 Set Team B</button>
+        </div>
     </div>
 
     <script>
         // Function to update scores dynamically
         function updateScore(team, delta) {
+            const scoreElement = document.getElementById('score' + (team === 'team1' ? 1 : 2));
+            let currentScore = parseInt(scoreElement.innerText);
+            currentScore = Math.max(0, currentScore + delta); // Prevent negative scores
+            scoreElement.innerText = currentScore;
+        }
+    
+        // Function to update scores dynamically
+        function updateSets(team, delta) {
             const scoreElement = document.getElementById('score' + (team === 'team1' ? 1 : 2));
             let currentScore = parseInt(scoreElement.innerText);
             currentScore = Math.max(0, currentScore + delta); // Prevent negative scores
@@ -207,6 +230,21 @@
             // Set a minimum width based on character length (10px per character)
             const newWidth = Math.max(300, longestNameLength * 30); // Minimum width is 300px
             document.querySelector('.scoreboard-container').style.width = newWidth + 'px';
+        }
+
+        // Function to update set counts and display them if not 0:0
+        function updateSetCount(team, delta) {
+            const setCountElement = document.getElementById(team + '-set-count');
+            let currentSetCount = parseInt(setCountElement.innerText.split(': ')[1]);
+            currentSetCount = Math.max(0, currentSetCount + delta); // Prevent negative set counts
+            setCountElement.innerText = `Sets Won: ${currentSetCount}`;
+
+            // Show or hide the set count based on whether it’s 0
+            if (currentSetCount === 0) {
+                setCountElement.style.display = 'none';
+            } else {
+                setCountElement.style.display = 'block';
+            }
         }
 
         // Function to hide logos if no image source is provided
