@@ -91,22 +91,18 @@
             color: #fff;
         }
 
-        .score {
-            font-size: 3.1em;
+        .score,
+        .set {
+            font-size: 2.5em;
             font-weight: bold;
             color: #fff;
             padding: 5px 20px;
             border-radius: 5px;
             min-width: 70px;
             text-align: center;
+            background-color: #222;
         }
 
-        .set-count {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-top: 5px;
-            color: #fff;
-        }
         
         .controls {
             margin-top: 20px;
@@ -144,29 +140,24 @@
     <div class="scoreboard-container">
         <!-- Sponsor Section -->
         <div class="sponsor-logo">
-            <img id="sponsor-img" src="HP.jpg" alt="Sponsor Logo">
+            <img id="sponsor-img" src="sponsor-logo.png" alt="Sponsor Logo">
         </div>
 
-        <!-- Score Section -->
-        <div class="score-section">
-            <!-- Team A Section -->
-            <div class="team-section team1">
-                <div class="team">
-                    <img id="team1-logo" src="star.png" alt="Team A Logo" class="team-logo">
-                    <div id="team1-name" class="team-name">Team A</div>
-                </div>
-                <div id="score1" class="score">0</div>
-            </div>
-
-            <!-- Team B Section -->
-            <div class="team-section team2">
-                <div class="team">
-                    <img id="team2-logo" src="team2-logo.png" alt="" class="team-logo">
-                    <div id="team2-name" class="team-name">Team B</div>
-                </div>
-                <div id="score2" class="score">0</div>
-            </div>
+        <!-- Team A Section -->
+        <div class="team-section team1">
+            <img id="team1-logo" src="team1-logo.png" alt="Team A Logo" class="team-logo">
+            <div id="team1-name" class="team-name">Team A</div>
         </div>
+        <div id="team1-set" class="set" style="display: none;">0</div>
+        <div id="score1" class="score">0</div>
+
+        <!-- Team B Section -->
+        <div class="team-section team2">
+            <img id="team2-logo" src="team2-logo.png" alt="Team B Logo" class="team-logo">
+            <div id="team2-name" class="team-name">Team B</div>
+        </div>
+        <div id="team2-set" class="set" style="display: none;">0</div>
+        <div id="score2" class="score">0</div>
     </div>
 
     <!-- Controls Section -->
@@ -232,19 +223,15 @@
             document.querySelector('.scoreboard-container').style.width = newWidth + 'px';
         }
 
-        // Function to update set counts and display them if not 0:0
+        // Function to update set counts and display them if not 0
         function updateSetCount(team, delta) {
-            const setCountElement = document.getElementById(team + '-set-count');
-            let currentSetCount = parseInt(setCountElement.innerText.split(': ')[1]);
+            const setElement = document.getElementById(team + '-set');
+            let currentSetCount = parseInt(setElement.innerText);
             currentSetCount = Math.max(0, currentSetCount + delta); // Prevent negative set counts
-            setCountElement.innerText = `Sets Won: ${currentSetCount}`;
+            setElement.innerText = currentSetCount;
 
             // Show or hide the set count based on whether it’s 0
-            if (currentSetCount === 0) {
-                setCountElement.style.display = 'none';
-            } else {
-                setCountElement.style.display = 'block';
-            }
+            setElement.style.display = currentSetCount === 0 ? 'none' : 'block';
         }
 
         // Function to hide logos if no image source is provided
