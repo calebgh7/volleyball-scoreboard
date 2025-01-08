@@ -8,7 +8,7 @@
         body {
             margin: 0;
             font-family: 'Arial', sans-serif;
-            background-color: #22222200;
+            background-color: #222;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,19 +17,20 @@
         }
 
         .scoreboard-container {
-            display: flex;
+            display: grid;
+            grid-template-columns: auto 1fr auto; /* Automatically adjust based on team name */
             align-items: center;
-            width: 90%;
-            max-width: 800px;
-            background-color: #333333;
+            background-color: #333;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+            gap: 10px;
+            padding: 10px;
         }
 
         .sponsor-logo {
-            width: 10%;
-            background-color: #44444400;
+            grid-column: span 3;
+            background-color: #444;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,42 +42,25 @@
             max-height: 80px;
         }
 
-        .score-section {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            width: 80%;
-        }
-
         .team-section {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            width: 100%;
-            padding: 10px 20px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-
-        .team-section:last-child {
-            margin-bottom: 0;
+            gap: 10px;
         }
 
         /* Solid colors for each team */
         .team-section.team1 {
-            background-color: #9682EB; /* Blue for Team A */
+            background-color: #4a90e2; /* Blue for Team A */
             color: #fff;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         .team-section.team2 {
-            background-color: #040404; /* Green for Team B */
+            background-color: #50c878; /* Green for Team B */
             color: #fff;
-        }
-
-        .team {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         .team-logo {
@@ -86,19 +70,20 @@
         }
 
         .team-name {
-            font-size: 2.3em;
+            font-size: 1.8em;
             font-weight: bold;
             color: #fff;
         }
 
         .score {
-            font-size: 3.1em;
+            font-size: 2.5em;
             font-weight: bold;
             color: #fff;
             padding: 5px 20px;
             border-radius: 5px;
             min-width: 70px;
             text-align: center;
+            background-color: #222;
         }
 
         .controls {
@@ -137,29 +122,22 @@
     <div class="scoreboard-container">
         <!-- Sponsor Section -->
         <div class="sponsor-logo">
-            <img id="sponsor-img" src="HP.jpg" alt="Sponsor Logo">
+            <img id="sponsor-img" src="sponsor-logo.png" alt="Sponsor Logo">
         </div>
 
-        <!-- Score Section -->
-        <div class="score-section">
-            <!-- Team A Section -->
-            <div class="team-section team1">
-                <div class="team">
-                    <img id="team1-logo" src="star.png" alt="Team A Logo" class="team-logo">
-                    <div id="team1-name" class="team-name">Team A</div>
-                </div>
-                <div id="score1" class="score">0</div>
-            </div>
-
-            <!-- Team B Section -->
-            <div class="team-section team2">
-                <div class="team">
-                    <img id="team2-logo" src="team2-logo.png" alt="" class="team-logo">
-                    <div id="team2-name" class="team-name">Team B</div>
-                </div>
-                <div id="score2" class="score">0</div>
-            </div>
+        <!-- Team A Section -->
+        <div class="team-section team1">
+            <img id="team1-logo" src="team1-logo.png" alt="Team A Logo" class="team-logo">
+            <div id="team1-name" class="team-name">Team A</div>
         </div>
+        <div id="score1" class="score">0</div>
+
+        <!-- Team B Section -->
+        <div class="team-section team2">
+            <img id="team2-logo" src="team2-logo.png" alt="Team B Logo" class="team-logo">
+            <div id="team2-name" class="team-name">Team B</div>
+        </div>
+        <div id="score2" class="score">0</div>
     </div>
 
     <!-- Controls Section -->
@@ -196,6 +174,20 @@
         function updateTeamName(team, newName) {
             const teamNameElement = document.getElementById(team + '-name');
             teamNameElement.innerText = newName || (team === 'team1' ? 'Team A' : 'Team B');
+
+            // Recalculate the scoreboard width based on the longest team name
+            recalculateWidth();
+        }
+
+        // Function to recalculate scoreboard width based on longest team name
+        function recalculateWidth() {
+            const team1NameLength = document.getElementById('team1-name').innerText.length;
+            const team2NameLength = document.getElementById('team2-name').innerText.length;
+            const longestNameLength = Math.max(team1NameLength, team2NameLength);
+
+            // Set a minimum width based on character length (10px per character)
+            const newWidth = Math.max(300, longestNameLength * 20); // Minimum width is 300px
+            document.querySelector('.scoreboard-container').style.width = newWidth + 'px';
         }
 
         // Function to hide logos if no image source is provided
