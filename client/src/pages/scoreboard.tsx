@@ -104,6 +104,17 @@ export default function Scoreboard() {
     });
   };
 
+  // Function to update match format
+  const updateMatchFormat = (format: number) => {
+    setMatchData(prev => ({
+      ...prev,
+      match: {
+        ...prev.match,
+        format: format
+      }
+    }));
+  };
+
   const openOverlayWindow = () => {
     const overlayUrl = `${window.location.origin}/?overlay=true`;
     window.open(overlayUrl, 'Scoreboard Overlay', 'width=1920,height=1080,toolbar=no,menubar=no,scrollbars=no,status=no');
@@ -183,6 +194,7 @@ export default function Scoreboard() {
               onTeamUpdate={updateTeam}
               onSetsWonUpdate={updateSetsWon}
               onLogoUpdate={updateLogo}
+              onMatchFormatUpdate={updateMatchFormat}
             />
           </div>
         </div>

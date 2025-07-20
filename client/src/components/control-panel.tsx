@@ -18,9 +18,10 @@ interface ControlPanelProps {
   onTeamUpdate?: (team: 'home' | 'away', field: string, value: string) => void;
   onSetsWonUpdate?: (team: 'home' | 'away', value: number) => void;
   onLogoUpdate?: (teamId: number, logoUrl: string) => void;
+  onMatchFormatUpdate?: (format: number) => void;
 }
 
-export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSetsWonUpdate, onLogoUpdate }: ControlPanelProps) {
+export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSetsWonUpdate, onLogoUpdate, onMatchFormatUpdate }: ControlPanelProps) {
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -170,15 +171,21 @@ export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSets
 
   const handleMatchFormatChange = async (format: string) => {
     try {
-      await apiRequest('PATCH', `/api/matches/${match.id}`, { 
-        format: parseInt(format) 
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
-      toast({
-        title: "Success",
-        description: `Match format changed to best of ${format}`,
-        duration: 2000
-      });
+      if (onMatchFormatUpdate) {
+        onMatchFormatUpdate(parseInt(format));
+        toast({
+          title: "Success",
+          description: `Match format changed to best of ${format}`,
+          duration: 2000
+        });
+      } else {
+        toast({
+          title: "Note",
+          description: "Match format update function not available",
+          variant: "default",
+          duration: 2000
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",

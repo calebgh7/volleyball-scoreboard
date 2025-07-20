@@ -60,7 +60,7 @@ export default function ScoreboardDisplay({ data, isOverlay = false }: Scoreboar
           )}
           
           {/* Clean Score Grid */}
-          <div className="flex-1 bg-black/80 rounded-lg p-4 backdrop-blur-sm">
+          <div className="flex-1 p-4">
             <div className="grid gap-3">
             
             {/* Home team row */}
@@ -80,7 +80,12 @@ export default function ScoreboardDisplay({ data, isOverlay = false }: Scoreboar
                     {(homeTeam?.name || 'HOME').charAt(0)}
                   </div>
                 )}
-                <div className="text-lg font-semibold text-white tracking-wide">{homeTeam?.name || 'HOME'}</div>
+                <div 
+                  className="text-lg font-semibold text-white tracking-wide px-4 py-2 rounded-full"
+                  style={{ backgroundColor: homeTeam?.primaryColor || '#1565C0' }}
+                >
+                  {homeTeam?.name || 'HOME'}
+                </div>
               </div>
               {Array.from({ length: setsToShow }, (_, setIndex) => {
                 const setNumber = setIndex + 1;
@@ -93,20 +98,7 @@ export default function ScoreboardDisplay({ data, isOverlay = false }: Scoreboar
                 return (
                   <div 
                     key={setIndex} 
-                    className={`text-center text-2xl font-bold py-2 px-3 rounded ${
-                      isCurrentSet 
-                        ? 'bg-orange-500 text-white' 
-                        : homeWon 
-                          ? 'text-white'
-                          : 'text-gray-200'
-                    }`}
-                    style={{
-                      backgroundColor: isCurrentSet 
-                        ? '#F59E0B' 
-                        : homeWon 
-                          ? homeTeam?.primaryColor || '#1565C0'
-                          : 'transparent'
-                    }}
+                    className="text-center text-2xl font-bold py-2 px-3 rounded text-white bg-gray-500/30"
                   >
                     {homeScore || (isCurrentSet ? 0 : '-')}
                   </div>
@@ -131,7 +123,12 @@ export default function ScoreboardDisplay({ data, isOverlay = false }: Scoreboar
                     {(awayTeam?.name || 'AWAY').charAt(0)}
                   </div>
                 )}
-                <div className="text-lg font-semibold text-white tracking-wide">{awayTeam?.name || 'AWAY'}</div>
+                <div 
+                  className="text-lg font-semibold text-white tracking-wide px-4 py-2 rounded-full"
+                  style={{ backgroundColor: awayTeam?.primaryColor || '#1565C0' }}
+                >
+                  {awayTeam?.name || 'AWAY'}
+                </div>
               </div>
               {Array.from({ length: setsToShow }, (_, setIndex) => {
                 const setNumber = setIndex + 1;
@@ -144,20 +141,7 @@ export default function ScoreboardDisplay({ data, isOverlay = false }: Scoreboar
                 return (
                   <div 
                     key={setIndex} 
-                    className={`text-center text-2xl font-bold py-2 px-3 rounded ${
-                      isCurrentSet 
-                        ? 'bg-orange-500 text-white' 
-                        : awayWon 
-                          ? 'text-white'
-                          : 'text-gray-200'
-                    }`}
-                    style={{
-                      backgroundColor: isCurrentSet 
-                        ? '#F59E0B' 
-                        : awayWon 
-                          ? awayTeam?.primaryColor || '#1565C0'
-                          : 'transparent'
-                    }}
+                    className="text-center text-2xl font-bold py-2 px-3 rounded text-white bg-gray-500/30"
                   >
                     {awayScore || (isCurrentSet ? 0 : '-')}
                   </div>
