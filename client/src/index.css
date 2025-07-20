@@ -57,11 +57,18 @@
   --radius: 0.5rem;
 }
 
+/* Prevent white flash on page load */
+html {
+  background-color: hsl(240, 10%, 3.9%);
+}
+
 body {
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   background: var(--background);
   color: var(--foreground);
+  /* Prevent flash of white background */
+  background-color: hsl(240, 10%, 3.9%);
 }
 
 .score-animate {

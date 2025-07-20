@@ -161,13 +161,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         <div className="space-y-6">
           {/* Theme Customization */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
               <Palette className="mr-2 h-5 w-5" />
               Theme & Colors
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label className="text-sm font-medium text-foreground mb-2 block">
                   Primary Color
                 </Label>
                 <Input
@@ -178,7 +178,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 />
               </div>
               <div>
-                <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label className="text-sm font-medium text-foreground mb-2 block">
                   Accent Color
                 </Label>
                 <Input
@@ -193,12 +193,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           
           {/* Sponsor Settings */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
               <Building className="mr-2 h-5 w-5" />
               Sponsor Configuration
             </h3>
             <Card 
-              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer"
+              className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer bg-card"
               onClick={() => {
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -210,9 +210,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 input.click();
               }}
             >
-              <Building className="text-3xl text-gray-400 mb-3 mx-auto h-12 w-12" />
-              <p className="text-gray-600 font-medium">Upload Sponsor Logo</p>
-              <p className="text-sm text-gray-500">PNG, JPG up to 2MB</p>
+              <Building className="text-3xl text-muted-foreground mb-3 mx-auto h-12 w-12" />
+              <p className="text-foreground font-medium">Upload Sponsor Logo</p>
+              <p className="text-sm text-muted-foreground">PNG, JPG up to 2MB</p>
               {settings?.sponsorLogoPath && (
                 <div className="mt-3">
                   <img 
@@ -227,7 +227,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           
           {/* Layout Presets */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Layout Presets</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">Layout Presets</h3>
             <div className="grid grid-cols-3 gap-3">
               {themes.map((theme) => (
                 <Button
@@ -243,14 +243,14 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
         </div>
         
-        <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+        <div className="flex justify-end space-x-3 pt-6 border-t border-border">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button 
             onClick={handleSave}
             disabled={isUpdating}
-            className="bg-primary text-white"
+            className="bg-primary text-primary-foreground"
           >
             {isUpdating ? "Saving..." : "Save Changes"}
           </Button>
