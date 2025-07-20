@@ -40,11 +40,6 @@ function Router() {
 }
 
 function App() {
-  // Set dark theme immediately to prevent white flash
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

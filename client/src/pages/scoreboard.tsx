@@ -22,10 +22,10 @@ export default function Scoreboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading scoreboard...</p>
+          <p className="text-muted-foreground">Loading scoreboard...</p>
         </div>
       </div>
     );
@@ -46,24 +46,24 @@ export default function Scoreboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-card shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <i className="fas fa-volleyball-ball text-white text-lg"></i>
+                <i className="fas fa-volleyball-ball text-primary-foreground text-lg"></i>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">VolleyScore Pro</h1>
-                <p className="text-sm text-gray-500">Live Streaming Scoreboard</p>
+                <h1 className="text-xl font-bold text-foreground">VolleyScore Pro</h1>
+                <p className="text-sm text-muted-foreground">Live Streaming Scoreboard</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <Button 
                 onClick={openOverlayWindow}
-                className="bg-secondary hover:bg-secondary/90 text-white"
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
               >
                 <Tv className="mr-2 h-4 w-4" />
                 Overlay Mode
