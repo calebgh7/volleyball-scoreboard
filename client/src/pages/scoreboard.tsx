@@ -90,6 +90,20 @@ export default function Scoreboard() {
     }));
   };
 
+  // Function to update team logo
+  const updateLogo = (teamId: number, logoUrl: string) => {
+    setMatchData(prev => {
+      const isHomeTeam = teamId === prev.homeTeam.id;
+      return {
+        ...prev,
+        [isHomeTeam ? 'homeTeam' : 'awayTeam']: {
+          ...prev[isHomeTeam ? 'homeTeam' : 'awayTeam'],
+          logoPath: logoUrl
+        }
+      };
+    });
+  };
+
   const openOverlayWindow = () => {
     const overlayUrl = `${window.location.origin}/?overlay=true`;
     window.open(overlayUrl, 'Scoreboard Overlay', 'width=1920,height=1080,toolbar=no,menubar=no,scrollbars=no,status=no');
@@ -168,6 +182,7 @@ export default function Scoreboard() {
               onScoreUpdate={updateScore}
               onTeamUpdate={updateTeam}
               onSetsWonUpdate={updateSetsWon}
+              onLogoUpdate={updateLogo}
             />
           </div>
         </div>

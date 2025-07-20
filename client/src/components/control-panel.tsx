@@ -17,9 +17,10 @@ interface ControlPanelProps {
   onScoreUpdate?: (team: 'home' | 'away', increment: boolean) => void;
   onTeamUpdate?: (team: 'home' | 'away', field: string, value: string) => void;
   onSetsWonUpdate?: (team: 'home' | 'away', value: number) => void;
+  onLogoUpdate?: (teamId: number, logoUrl: string) => void;
 }
 
-export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSetsWonUpdate }: ControlPanelProps) {
+export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSetsWonUpdate, onLogoUpdate }: ControlPanelProps) {
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -472,11 +473,13 @@ export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSets
               teamId={homeTeam?.id} 
               currentLogo={homeTeam?.logoPath}
               label="Home Logo"
+              onLogoUpdate={onLogoUpdate}
             />
             <LogoUpload 
               teamId={awayTeam?.id} 
               currentLogo={awayTeam?.logoPath}
               label="Away Logo"
+              onLogoUpdate={onLogoUpdate}
             />
           </div>
         </CardContent>

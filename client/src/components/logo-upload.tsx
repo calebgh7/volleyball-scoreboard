@@ -9,9 +9,10 @@ interface LogoUploadProps {
   teamId: number;
   currentLogo?: string | null;
   label: string;
+  onLogoUpdate?: (teamId: number, logoUrl: string) => void;
 }
 
-export default function LogoUpload({ teamId, currentLogo, label }: LogoUploadProps) {
+export default function LogoUpload({ teamId, currentLogo, label, onLogoUpdate }: LogoUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,24 +42,24 @@ export default function LogoUpload({ teamId, currentLogo, label }: LogoUploadPro
     setIsUploading(true);
     
     try {
-      const formData = new FormData();
-      formData.append('logo', file);
-
-      const response = await fetch(`/api/teams/${teamId}/logo`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
+      // Create a local URL for the uploaded file
+      const logoUrl = URL.createObjectURL(file);
+      
+      if (onLogoUpdate) {
+        onLogoUpdate(teamId, logoUrl);
+        toast({
+          title: "Success",
+          description: "Logo uploaded successfully",
+          duration: 2000
+        });
+      } else {
+        toast({
+          title: "Note",
+          description: "Logo update function not available",
+          variant: "default",
+          duration: 2000
+        });
       }
-
-      queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
-      toast({
-        title: "Success",
-        description: "Logo uploaded successfully",
-        duration: 2000
-      });
     } catch (error) {
       toast({
         title: "Error",
