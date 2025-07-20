@@ -1,58 +1,15 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import ScoreboardDisplay from "@/components/scoreboard-display";
 import ControlPanel from "@/components/control-panel";
 import SettingsModal from "@/components/settings-modal";
 import { Button } from "@/components/ui/button";
-import { Settings, Tv } from "lucide-react";
-import { queryClient } from "@/lib/queryClient";
+import { Settings, Tv, RotateCcw } from "lucide-react";
 
 export default function Scoreboard() {
-  const [isOverlayMode, setIsOverlayMode] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const { data: currentMatch, isLoading } = useQuery({
-    queryKey: ['/api/current-match'],
-    refetchInterval: 1000, // Real-time updates
-  });
-
-  // Mutation to create a default match
-  const createDefaultMatch = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/matches', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          homeTeamId: 1, // Default EAGLES team
-          awayTeamId: 2,  // Default TIGERS team
-          format: 5, // 5-set match
-          currentSet: 1,
-          homeSetsWon: 0,
-          awaySetsWon: 0,
-          isComplete: false
-        }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to create default match');
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
-    },
-  });
-
-  // Auto-create a default match if none exists
-  useEffect(() => {
-    if (!isLoading && !currentMatch && !createDefaultMatch.isPending) {
-      createDefaultMatch.mutate();
-    }
-  }, [currentMatch, isLoading]);
-
-  // Create mock data for when API isn't available
-  const mockMatch = {
+  
+  // Local state for the match data - no API needed
+  const [matchData] = useState({
     match: {
       id: 1,
       homeTeamId: 1,
@@ -89,28 +46,12 @@ export default function Scoreboard() {
       isSetComplete: false,
       timestamp: new Date().toISOString()
     }
-  };
-
-  // Use mock data if API isn't working
-  const displayData = currentMatch || (createDefaultMatch.isError ? mockMatch : null);
+  });
 
   const openOverlayWindow = () => {
     const overlayUrl = `${window.location.origin}/?overlay=true`;
     window.open(overlayUrl, 'Scoreboard Overlay', 'width=1920,height=1080,toolbar=no,menubar=no,scrollbars=no,status=no');
   };
-
-  if (isLoading || (createDefaultMatch.isPending && !displayData)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">
-            {createDefaultMatch.isPending ? "Setting up scoreboard..." : "Loading scoreboard..."}
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const urlParams = new URLSearchParams(window.location.search);
   const isOverlay = urlParams.get('overlay') === 'true';
@@ -119,7 +60,7 @@ export default function Scoreboard() {
     return (
       <div className="min-h-screen bg-transparent">
         <ScoreboardDisplay 
-          data={displayData} 
+          data={matchData} 
           isOverlay={true}
         />
       </div>
@@ -134,7 +75,7 @@ export default function Scoreboard() {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <i className="fas fa-volleyball-ball text-primary-foreground text-lg"></i>
+                <span className="text-primary-foreground text-lg font-bold">🏐</span>
               </div>
               <div>
                 <h1 className="text-xl font-bold text-foreground">VolleyScore Pro</h1>
@@ -142,6 +83,14 @@ export default function Scoreboard() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <Button 
+                onClick={() => window.location.reload()}
+                variant="outline"
+                className="text-foreground"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                New Game
+              </Button>
               <Button 
                 onClick={openOverlayWindow}
                 className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
@@ -152,6 +101,7 @@ export default function Scoreboard() {
               <Button 
                 variant="outline"
                 onClick={() => setIsSettingsOpen(true)}
+                className="text-foreground"
               >
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
@@ -166,12 +116,12 @@ export default function Scoreboard() {
         <div className="space-y-6">
           {/* Scoreboard Display */}
           <div>
-            <ScoreboardDisplay data={displayData} />
+            <ScoreboardDisplay data={matchData} />
           </div>
           
           {/* Control Panel */}
           <div>
-            <ControlPanel data={displayData} />
+            <ControlPanel data={matchData} />
           </div>
         </div>
       </main>
