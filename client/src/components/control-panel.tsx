@@ -14,9 +14,10 @@ import { Gamepad2, Users, Settings, Radio, Plus, Minus, Check, RotateCcw, Save, 
 
 interface ControlPanelProps {
   data: any;
+  onScoreUpdate?: (team: 'home' | 'away', increment: boolean) => void;
 }
 
-export default function ControlPanel({ data }: ControlPanelProps) {
+export default function ControlPanel({ data, onScoreUpdate }: ControlPanelProps) {
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -37,13 +38,23 @@ export default function ControlPanel({ data }: ControlPanelProps) {
   const handleScoreChange = async (team: 'home' | 'away', increment: boolean) => {
     try {
       setIsUpdating(true);
-      // Simple client-side update - just show a toast for now
-      // The actual scoring will be handled by the parent component
-      toast({
-        title: "Score Updated",
-        description: `${team === 'home' ? homeTeam.name : awayTeam.name} score ${increment ? 'increased' : 'decreased'}`,
-        variant: "default",
-      });
+      
+      if (onScoreUpdate) {
+        // Use the passed function to update scores
+        onScoreUpdate(team, increment);
+        toast({
+          title: "Score Updated",
+          description: `${team === 'home' ? homeTeam.name : awayTeam.name} score ${increment ? 'increased' : 'decreased'}`,
+          variant: "default",
+        });
+      } else {
+        // Fallback message if no update function provided
+        toast({
+          title: "Note",
+          description: "Score update function not available",
+          variant: "default",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",

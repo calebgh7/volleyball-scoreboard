@@ -9,7 +9,7 @@ export default function Scoreboard() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   // Local state for the match data - no API needed
-  const [matchData] = useState({
+  const [matchData, setMatchData] = useState({
     match: {
       id: 1,
       homeTeamId: 1,
@@ -47,6 +47,26 @@ export default function Scoreboard() {
       timestamp: new Date().toISOString()
     }
   });
+
+  // Function to update scores that we'll pass to the control panel
+  const updateScore = (team: 'home' | 'away', increment: boolean) => {
+    setMatchData(prev => {
+      const currentScore = team === 'home' ? prev.gameState.homeScore : prev.gameState.awayScore;
+      
+      if (!increment && currentScore <= 0) return prev;
+      
+      const newScore = increment ? currentScore + 1 : currentScore - 1;
+      
+      return {
+        ...prev,
+        gameState: {
+          ...prev.gameState,
+          [team === 'home' ? 'homeScore' : 'awayScore']: newScore,
+          timestamp: new Date().toISOString()
+        }
+      };
+    });
+  };
 
   const openOverlayWindow = () => {
     const overlayUrl = `${window.location.origin}/?overlay=true`;
@@ -121,7 +141,7 @@ export default function Scoreboard() {
           
           {/* Control Panel */}
           <div>
-            <ControlPanel data={matchData} />
+            <ControlPanel data={matchData} onScoreUpdate={updateScore} />
           </div>
         </div>
       </main>
