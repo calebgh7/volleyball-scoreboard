@@ -98,7 +98,7 @@ export default function ScoreboardDisplay({ data, isOverlay = false }: Scoreboar
                 return (
                   <div 
                     key={setIndex} 
-                    className="text-center text-2xl font-bold py-2 px-3 rounded text-white bg-gray-500/30"
+                    className="text-center text-2xl font-bold py-2 px-3 rounded text-white bg-gray-800/60"
                   >
                     {homeScore || (isCurrentSet ? 0 : '-')}
                   </div>
@@ -141,7 +141,7 @@ export default function ScoreboardDisplay({ data, isOverlay = false }: Scoreboar
                 return (
                   <div 
                     key={setIndex} 
-                    className="text-center text-2xl font-bold py-2 px-3 rounded text-white bg-gray-500/30"
+                    className="text-center text-2xl font-bold py-2 px-3 rounded text-white bg-gray-800/60"
                   >
                     {awayScore || (isCurrentSet ? 0 : '-')}
                   </div>

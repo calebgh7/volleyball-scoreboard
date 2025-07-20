@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ScoreboardDisplay from "@/components/scoreboard-display";
 import ControlPanel from "@/components/control-panel";
 import SettingsModal from "@/components/settings-modal";
@@ -19,7 +19,7 @@ export default function Scoreboard() {
       homeSetsWon: 0,
       awaySetsWon: 0,
       isComplete: false,
-      setHistory: []
+      setHistory: [] as Array<{setNumber: number, homeScore: number, awayScore: number, isComplete: boolean}>
     },
     homeTeam: {
       id: 1,
@@ -47,6 +47,28 @@ export default function Scoreboard() {
       timestamp: new Date().toISOString()
     }
   });
+
+  // Load data from localStorage on mount (for overlay mode)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isOverlay = urlParams.get('overlay') === 'true';
+    
+    if (isOverlay) {
+      const savedData = localStorage.getItem('volleyball-scoreboard-data');
+      if (savedData) {
+        try {
+          setMatchData(JSON.parse(savedData));
+        } catch (error) {
+          console.error('Failed to load saved data:', error);
+        }
+      }
+    }
+  }, []);
+
+  // Save data to localStorage whenever it changes (for overlay mode)
+  useEffect(() => {
+    localStorage.setItem('volleyball-scoreboard-data', JSON.stringify(matchData));
+  }, [matchData]);
 
   // Function to update scores that we'll pass to the control panel
   const updateScore = (team: 'home' | 'away', increment: boolean) => {
@@ -113,6 +135,53 @@ export default function Scoreboard() {
         format: format
       }
     }));
+  };
+
+  // Function to complete a set
+  const completeSet = () => {
+    setMatchData(prev => {
+      const homeScore = prev.gameState.homeScore;
+      const awayScore = prev.gameState.awayScore;
+      const currentSet = prev.match.currentSet;
+      
+      // Determine who won the set
+      const homeWon = homeScore > awayScore;
+      
+      // Add current set to history
+      const newSetHistory = [
+        ...(prev.match.setHistory || []),
+        {
+          setNumber: currentSet,
+          homeScore: homeScore,
+          awayScore: awayScore,
+          isComplete: true
+        }
+      ];
+      
+      // Update sets won
+      const newHomeSetsWon = prev.match.homeSetsWon + (homeWon ? 1 : 0);
+      const newAwaySetsWon = prev.match.awaySetsWon + (homeWon ? 0 : 1);
+      
+      return {
+        ...prev,
+        match: {
+          ...prev.match,
+          currentSet: currentSet + 1,
+          homeSetsWon: newHomeSetsWon,
+          awaySetsWon: newAwaySetsWon,
+          setHistory: newSetHistory,
+          isComplete: false
+        },
+        gameState: {
+          ...prev.gameState,
+          homeScore: 0,
+          awayScore: 0,
+          currentSet: currentSet + 1,
+          isSetComplete: false,
+          timestamp: new Date().toISOString()
+        }
+      };
+    });
   };
 
   const openOverlayWindow = () => {
@@ -195,6 +264,7 @@ export default function Scoreboard() {
               onSetsWonUpdate={updateSetsWon}
               onLogoUpdate={updateLogo}
               onMatchFormatUpdate={updateMatchFormat}
+              onCompleteSet={completeSet}
             />
           </div>
         </div>

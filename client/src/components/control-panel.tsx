@@ -19,9 +19,10 @@ interface ControlPanelProps {
   onSetsWonUpdate?: (team: 'home' | 'away', value: number) => void;
   onLogoUpdate?: (teamId: number, logoUrl: string) => void;
   onMatchFormatUpdate?: (format: number) => void;
+  onCompleteSet?: () => void;
 }
 
-export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSetsWonUpdate, onLogoUpdate, onMatchFormatUpdate }: ControlPanelProps) {
+export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSetsWonUpdate, onLogoUpdate, onMatchFormatUpdate, onCompleteSet }: ControlPanelProps) {
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -101,18 +102,21 @@ export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSets
 
   const handleCompleteSet = async () => {
     try {
-      await completeSet(
-        match.id, 
-        gameState.homeScore, 
-        gameState.awayScore, 
-        match.currentSet, 
-        match.setHistory
-      );
-      toast({
-        title: "Success",
-        description: "Set completed",
-        duration: 2000
-      });
+      if (onCompleteSet) {
+        onCompleteSet();
+        toast({
+          title: "Success",
+          description: "Set completed",
+          duration: 2000
+        });
+      } else {
+        toast({
+          title: "Note",
+          description: "Complete set function not available",
+          variant: "default",
+          duration: 2000
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
