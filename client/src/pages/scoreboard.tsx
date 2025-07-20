@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import ScoreboardDisplay from "@/components/scoreboard-display";
 import ControlPanel from "@/components/control-panel";
 import SettingsModal from "@/components/settings-modal";
 import { Button } from "@/components/ui/button";
 import { Settings, Tv } from "lucide-react";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Scoreboard() {
   const [isOverlayMode, setIsOverlayMode] = useState(false);
@@ -15,17 +16,54 @@ export default function Scoreboard() {
     refetchInterval: 1000, // Real-time updates
   });
 
+  // Mutation to create a default match
+  const createDefaultMatch = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/matches', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          homeTeamId: 1, // Default EAGLES team
+          awayTeamId: 2,  // Default TIGERS team
+          format: 5, // 5-set match
+          currentSet: 1,
+          homeSetsWon: 0,
+          awaySetsWon: 0,
+          isComplete: false
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create default match');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
+    },
+  });
+
+  // Auto-create a default match if none exists
+  useEffect(() => {
+    if (!isLoading && !currentMatch) {
+      createDefaultMatch.mutate();
+    }
+  }, [currentMatch, isLoading]);
+
   const openOverlayWindow = () => {
     const overlayUrl = `${window.location.origin}/?overlay=true`;
     window.open(overlayUrl, 'Scoreboard Overlay', 'width=1920,height=1080,toolbar=no,menubar=no,scrollbars=no,status=no');
   };
 
-  if (isLoading) {
+  if (isLoading || createDefaultMatch.isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading scoreboard...</p>
+          <p className="text-muted-foreground">
+            {createDefaultMatch.isPending ? "Setting up scoreboard..." : "Loading scoreboard..."}
+          </p>
         </div>
       </div>
     );
