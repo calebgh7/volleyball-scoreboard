@@ -463,12 +463,12 @@ export default function ControlPanel({ data }: ControlPanelProps) {
           <div>
             <Label className="text-sm font-medium text-gray-700 mb-2 block">Match Format</Label>
             <Select value={match.format.toString()} onValueChange={handleMatchFormatChange}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="3">Best of 3 Sets</SelectItem>
-                <SelectItem value="5">Best of 5 Sets</SelectItem>
+              <SelectContent className="bg-white border-gray-300">
+                <SelectItem value="3" className="text-gray-900 hover:bg-gray-100">Best of 3 Sets</SelectItem>
+                <SelectItem value="5" className="text-gray-900 hover:bg-gray-100">Best of 5 Sets</SelectItem>
               </SelectContent>
             </Select>
           </div>

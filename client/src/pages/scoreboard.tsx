@@ -86,14 +86,14 @@ export default function Scoreboard() {
               <Button 
                 onClick={() => window.location.reload()}
                 variant="outline"
-                className="text-foreground"
+                className="text-white bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700"
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
                 New Game
               </Button>
               <Button 
                 onClick={openOverlayWindow}
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Tv className="mr-2 h-4 w-4" />
                 Overlay Mode
@@ -101,7 +101,7 @@ export default function Scoreboard() {
               <Button 
                 variant="outline"
                 onClick={() => setIsSettingsOpen(true)}
-                className="text-foreground"
+                className="text-white bg-green-600 border-green-600 hover:bg-green-700 hover:border-green-700"
               >
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
