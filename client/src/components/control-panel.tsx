@@ -15,9 +15,11 @@ import { Gamepad2, Users, Settings, Radio, Plus, Minus, Check, RotateCcw, Save, 
 interface ControlPanelProps {
   data: any;
   onScoreUpdate?: (team: 'home' | 'away', increment: boolean) => void;
+  onTeamUpdate?: (team: 'home' | 'away', field: string, value: string) => void;
+  onSetsWonUpdate?: (team: 'home' | 'away', value: number) => void;
 }
 
-export default function ControlPanel({ data, onScoreUpdate }: ControlPanelProps) {
+export default function ControlPanel({ data, onScoreUpdate, onTeamUpdate, onSetsWonUpdate }: ControlPanelProps) {
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -121,13 +123,23 @@ export default function ControlPanel({ data, onScoreUpdate }: ControlPanelProps)
 
   const handleTeamUpdate = async (teamId: number, field: string, value: string) => {
     try {
-      await apiRequest('PATCH', `/api/teams/${teamId}`, { [field]: value });
-      queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
-      toast({
-        title: "Success",
-        description: "Team updated",
-        duration: 2000
-      });
+      if (onTeamUpdate) {
+        // Determine which team based on teamId
+        const team = teamId === data.homeTeam?.id ? 'home' : 'away';
+        onTeamUpdate(team, field, value);
+        toast({
+          title: "Success",
+          description: "Team updated",
+          duration: 2000
+        });
+      } else {
+        toast({
+          title: "Note",
+          description: "Team update function not available",
+          variant: "default",
+          duration: 2000
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -178,11 +190,21 @@ export default function ControlPanel({ data, onScoreUpdate }: ControlPanelProps)
 
   const handleSetsWonChange = async (team: 'home' | 'away', value: number) => {
     try {
-      const field = team === 'home' ? 'homeSetsWon' : 'awaySetsWon';
-      await apiRequest('PATCH', `/api/matches/${match.id}`, { 
-        [field]: Math.max(0, Math.min(5, value))
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
+      if (onSetsWonUpdate) {
+        onSetsWonUpdate(team, Math.max(0, Math.min(5, value)));
+        toast({
+          title: "Success",
+          description: "Sets won updated",
+          duration: 2000
+        });
+      } else {
+        toast({
+          title: "Note",
+          description: "Sets won update function not available",
+          variant: "default",
+          duration: 2000
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",

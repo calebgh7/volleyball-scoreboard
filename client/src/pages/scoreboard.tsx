@@ -68,6 +68,28 @@ export default function Scoreboard() {
     });
   };
 
+  // Function to update team information
+  const updateTeam = (team: 'home' | 'away', field: string, value: string) => {
+    setMatchData(prev => ({
+      ...prev,
+      [team === 'home' ? 'homeTeam' : 'awayTeam']: {
+        ...prev[team === 'home' ? 'homeTeam' : 'awayTeam'],
+        [field]: value
+      }
+    }));
+  };
+
+  // Function to update sets won
+  const updateSetsWon = (team: 'home' | 'away', value: number) => {
+    setMatchData(prev => ({
+      ...prev,
+      match: {
+        ...prev.match,
+        [team === 'home' ? 'homeSetsWon' : 'awaySetsWon']: value
+      }
+    }));
+  };
+
   const openOverlayWindow = () => {
     const overlayUrl = `${window.location.origin}/?overlay=true`;
     window.open(overlayUrl, 'Scoreboard Overlay', 'width=1920,height=1080,toolbar=no,menubar=no,scrollbars=no,status=no');
@@ -141,7 +163,12 @@ export default function Scoreboard() {
           
           {/* Control Panel */}
           <div>
-            <ControlPanel data={matchData} onScoreUpdate={updateScore} />
+            <ControlPanel 
+              data={matchData} 
+              onScoreUpdate={updateScore}
+              onTeamUpdate={updateTeam}
+              onSetsWonUpdate={updateSetsWon}
+            />
           </div>
         </div>
       </main>
