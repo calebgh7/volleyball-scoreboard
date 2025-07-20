@@ -46,17 +46,60 @@ export default function Scoreboard() {
 
   // Auto-create a default match if none exists
   useEffect(() => {
-    if (!isLoading && !currentMatch) {
+    if (!isLoading && !currentMatch && !createDefaultMatch.isPending) {
       createDefaultMatch.mutate();
     }
   }, [currentMatch, isLoading]);
+
+  // Create mock data for when API isn't available
+  const mockMatch = {
+    match: {
+      id: 1,
+      homeTeamId: 1,
+      awayTeamId: 2,
+      format: 5,
+      currentSet: 1,
+      homeSetsWon: 0,
+      awaySetsWon: 0,
+      isComplete: false,
+      setHistory: []
+    },
+    homeTeam: {
+      id: 1,
+      name: "EAGLES",
+      location: "Central High",
+      logoPath: null,
+      primaryColor: "#1565C0",
+      secondaryColor: "#90CAF9"
+    },
+    awayTeam: {
+      id: 2,
+      name: "TIGERS",
+      location: "North Valley", 
+      logoPath: null,
+      primaryColor: "#1565C0",
+      secondaryColor: "#90CAF9"
+    },
+    gameState: {
+      id: 1,
+      matchId: 1,
+      homeScore: 0,
+      awayScore: 0,
+      currentSet: 1,
+      isSetComplete: false,
+      timestamp: new Date().toISOString()
+    }
+  };
+
+  // Use mock data if API isn't working
+  const displayData = currentMatch || (createDefaultMatch.isError ? mockMatch : null);
 
   const openOverlayWindow = () => {
     const overlayUrl = `${window.location.origin}/?overlay=true`;
     window.open(overlayUrl, 'Scoreboard Overlay', 'width=1920,height=1080,toolbar=no,menubar=no,scrollbars=no,status=no');
   };
 
-  if (isLoading || createDefaultMatch.isPending) {
+  if (isLoading || (createDefaultMatch.isPending && !displayData)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -76,7 +119,7 @@ export default function Scoreboard() {
     return (
       <div className="min-h-screen bg-transparent">
         <ScoreboardDisplay 
-          data={currentMatch} 
+          data={displayData} 
           isOverlay={true}
         />
       </div>
@@ -123,12 +166,12 @@ export default function Scoreboard() {
         <div className="space-y-6">
           {/* Scoreboard Display */}
           <div>
-            <ScoreboardDisplay data={currentMatch} />
+            <ScoreboardDisplay data={displayData} />
           </div>
           
           {/* Control Panel */}
           <div>
-            <ControlPanel data={currentMatch} />
+            <ControlPanel data={displayData} />
           </div>
         </div>
       </main>
