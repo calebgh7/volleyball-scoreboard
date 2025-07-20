@@ -58,14 +58,18 @@ export class MemStorage implements IStorage {
       id: this.currentTeamId++,
       name: "EAGLES",
       location: "Central High",
-      logoPath: null
+      logoPath: null,
+      primaryColor: "#1565C0",
+      secondaryColor: "#90CAF9"
     };
     
     const awayTeam: Team = {
       id: this.currentTeamId++,
       name: "TIGERS", 
       location: "North Valley",
-      logoPath: null
+      logoPath: null,
+      primaryColor: "#1565C0",
+      secondaryColor: "#90CAF9"
     };
     
     this.teams.set(homeTeam.id, homeTeam);
@@ -112,7 +116,9 @@ export class MemStorage implements IStorage {
       ...insertTeam, 
       id: this.currentTeamId++,
       location: insertTeam.location ?? null,
-      logoPath: insertTeam.logoPath ?? null
+      logoPath: insertTeam.logoPath ?? null,
+      primaryColor: insertTeam.primaryColor ?? "#1565C0",
+      secondaryColor: insertTeam.secondaryColor ?? "#90CAF9"
     };
     this.teams.set(team.id, team);
     return team;
@@ -157,7 +163,14 @@ export class MemStorage implements IStorage {
     const match = this.matches.get(id);
     if (!match) return undefined;
     
-    const updatedMatch = { ...match, ...matchUpdate };
+    const updatedMatch: Match = { 
+      ...match, 
+      ...matchUpdate,
+      id: match.id, // Ensure id is preserved
+      setHistory: matchUpdate.setHistory ? 
+        (matchUpdate.setHistory as Array<{setNumber: number, homeScore: number, awayScore: number, winner: 'home' | 'away' | null}>) : 
+        match.setHistory
+    };
     this.matches.set(id, updatedMatch);
     return updatedMatch;
   }
