@@ -48,7 +48,8 @@ export default function ControlPanel({ data }: ControlPanelProps) {
       toast({
         title: "Error",
         description: "Failed to update score",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
     } finally {
       setIsUpdating(false);
@@ -57,17 +58,29 @@ export default function ControlPanel({ data }: ControlPanelProps) {
 
   const handleResetSet = async () => {
     try {
+      setIsUpdating(true);
+      console.log('Reset button clicked, match data:', { match, gameState });
+      
+      if (!match?.id) {
+        throw new Error('No valid match ID found');
+      }
+      
       await resetCurrentSet(match.id);
       toast({
         title: "Success",
-        description: "Set scores reset"
+        description: "Set scores reset to 0-0",
+        duration: 2000
       });
     } catch (error) {
+      console.error('Reset error:', error);
       toast({
         title: "Error",
-        description: "Failed to reset scores",
-        variant: "destructive"
+        description: `Failed to reset scores: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        variant: "destructive",
+        duration: 4000
       });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -82,13 +95,15 @@ export default function ControlPanel({ data }: ControlPanelProps) {
       );
       toast({
         title: "Success",
-        description: "Set completed"
+        description: "Set completed",
+        duration: 2000
       });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to complete set",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
     }
   };
@@ -99,13 +114,15 @@ export default function ControlPanel({ data }: ControlPanelProps) {
       queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
       toast({
         title: "Success",
-        description: "Team updated"
+        description: "Team updated",
+        duration: 2000
       });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update team",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
     }
   };
@@ -121,7 +138,8 @@ export default function ControlPanel({ data }: ControlPanelProps) {
       toast({
         title: "Error",
         description: "Failed to update display options",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
     }
   };
@@ -134,13 +152,15 @@ export default function ControlPanel({ data }: ControlPanelProps) {
       queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
       toast({
         title: "Success",
-        description: `Match format changed to best of ${format}`
+        description: `Match format changed to best of ${format}`,
+        duration: 2000
       });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update match format",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
     }
   };
@@ -156,7 +176,8 @@ export default function ControlPanel({ data }: ControlPanelProps) {
       toast({
         title: "Error",
         description: "Failed to update sets won",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
     }
   };
@@ -191,19 +212,18 @@ export default function ControlPanel({ data }: ControlPanelProps) {
               <Button 
                 onClick={() => handleScoreChange('home', true)}
                 disabled={isUpdating}
-                className="bg-accent hover:bg-accent/90 text-white py-3"
+                className="bg-green-600 hover:bg-green-700 text-white py-3"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                +1
+                Add Point
               </Button>
               <Button 
                 onClick={() => handleScoreChange('home', false)}
                 disabled={isUpdating}
-                variant="destructive"
-                className="py-3"
+                className="bg-red-600 hover:bg-red-700 text-white py-3"
               >
                 <Minus className="mr-2 h-4 w-4" />
-                -1
+                Remove Point
               </Button>
             </div>
           </div>
@@ -220,19 +240,18 @@ export default function ControlPanel({ data }: ControlPanelProps) {
               <Button 
                 onClick={() => handleScoreChange('away', true)}
                 disabled={isUpdating}
-                className="bg-accent hover:bg-accent/90 text-white py-3"
+                className="bg-green-600 hover:bg-green-700 text-white py-3"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                +1
+                Add Point
               </Button>
               <Button 
                 onClick={() => handleScoreChange('away', false)}
                 disabled={isUpdating}
-                variant="destructive"
-                className="py-3"
+                className="bg-red-600 hover:bg-red-700 text-white py-3"
               >
                 <Minus className="mr-2 h-4 w-4" />
-                -1
+                Remove Point
               </Button>
             </div>
           </div>
@@ -276,17 +295,18 @@ export default function ControlPanel({ data }: ControlPanelProps) {
             <div className="grid grid-cols-2 gap-3">
               <Button 
                 onClick={handleCompleteSet}
-                className="bg-secondary hover:bg-secondary/90 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Check className="mr-2 h-4 w-4" />
                 End Set
               </Button>
               <Button 
                 onClick={handleResetSet}
-                variant="outline"
+                disabled={isUpdating}
+                className="bg-gray-600 hover:bg-gray-700 text-white border-gray-500 disabled:opacity-50"
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
-                Reset
+                {isUpdating ? 'Resetting...' : 'Reset'}
               </Button>
             </div>
           </div>
@@ -316,7 +336,46 @@ export default function ControlPanel({ data }: ControlPanelProps) {
               value={homeTeam?.location || ''}
               onChange={(e) => handleTeamUpdate(homeTeam?.id, 'location', e.target.value)}
               placeholder="School/Location"
+              className="mb-2"
             />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-gray-600">Primary Color</Label>
+                <div className="flex gap-1">
+                  <Input 
+                    type="color"
+                    value={homeTeam?.primaryColor || '#1565C0'}
+                    onChange={(e) => handleTeamUpdate(homeTeam?.id, 'primaryColor', e.target.value)}
+                    className="h-10 w-16 p-1 flex-shrink-0"
+                  />
+                  <Input 
+                    type="text"
+                    value={homeTeam?.primaryColor || '#1565C0'}
+                    onChange={(e) => handleTeamUpdate(homeTeam?.id, 'primaryColor', e.target.value)}
+                    placeholder="#1565C0"
+                    className="h-10 flex-1 text-xs font-mono"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-600">Secondary Color</Label>
+                <div className="flex gap-1">
+                  <Input 
+                    type="color"
+                    value={homeTeam?.secondaryColor || '#90CAF9'}
+                    onChange={(e) => handleTeamUpdate(homeTeam?.id, 'secondaryColor', e.target.value)}
+                    className="h-10 w-16 p-1 flex-shrink-0"
+                  />
+                  <Input 
+                    type="text"
+                    value={homeTeam?.secondaryColor || '#90CAF9'}
+                    onChange={(e) => handleTeamUpdate(homeTeam?.id, 'secondaryColor', e.target.value)}
+                    placeholder="#90CAF9"
+                    className="h-10 flex-1 text-xs font-mono"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           
           {/* Away Team Setup */}
@@ -332,7 +391,46 @@ export default function ControlPanel({ data }: ControlPanelProps) {
               value={awayTeam?.location || ''}
               onChange={(e) => handleTeamUpdate(awayTeam?.id, 'location', e.target.value)}
               placeholder="School/Location"
+              className="mb-2"
             />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-gray-600">Primary Color</Label>
+                <div className="flex gap-1">
+                  <Input 
+                    type="color"
+                    value={awayTeam?.primaryColor || '#1565C0'}
+                    onChange={(e) => handleTeamUpdate(awayTeam?.id, 'primaryColor', e.target.value)}
+                    className="h-10 w-16 p-1 flex-shrink-0"
+                  />
+                  <Input 
+                    type="text"
+                    value={awayTeam?.primaryColor || '#1565C0'}
+                    onChange={(e) => handleTeamUpdate(awayTeam?.id, 'primaryColor', e.target.value)}
+                    placeholder="#1565C0"
+                    className="h-10 flex-1 text-xs font-mono"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-600">Secondary Color</Label>
+                <div className="flex gap-1">
+                  <Input 
+                    type="color"
+                    value={awayTeam?.secondaryColor || '#90CAF9'}
+                    onChange={(e) => handleTeamUpdate(awayTeam?.id, 'secondaryColor', e.target.value)}
+                    className="h-10 w-16 p-1 flex-shrink-0"
+                  />
+                  <Input 
+                    type="text"
+                    value={awayTeam?.secondaryColor || '#90CAF9'}
+                    onChange={(e) => handleTeamUpdate(awayTeam?.id, 'secondaryColor', e.target.value)}
+                    placeholder="#90CAF9"
+                    className="h-10 flex-1 text-xs font-mono"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           
           {/* Logo Upload Zones */}

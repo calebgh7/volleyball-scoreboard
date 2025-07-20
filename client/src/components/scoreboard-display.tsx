@@ -1,5 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+
+interface Settings {
+  id?: number;
+  sponsorLogoPath?: string;
+  primaryColor?: string;
+  accentColor?: string;
+  theme?: string;
+}
 
 interface ScoreboardDisplayProps {
   data: any;
@@ -7,6 +16,11 @@ interface ScoreboardDisplayProps {
 }
 
 export default function ScoreboardDisplay({ data, isOverlay = false }: ScoreboardDisplayProps) {
+  // Fetch settings to get sponsor logo
+  const { data: settings } = useQuery<Settings>({
+    queryKey: ['/api/settings'],
+  });
+
   if (!data) {
     return (
       <Card className="w-full">
@@ -19,135 +33,140 @@ export default function ScoreboardDisplay({ data, isOverlay = false }: Scoreboar
 
   const { match, homeTeam, awayTeam, gameState } = data;
 
+  // Calculate how many sets to display (completed + current)
+  const maxSets = Math.max(match.currentSet, match.setHistory?.length || 0);
+  const setsToShow = Math.min(maxSets, match.format);
+
   return (
     <Card className={`w-full ${isOverlay ? 'bg-transparent border-none shadow-none' : ''}`}>
-      {!isOverlay && (
-        <div className="broadcast-header text-white p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Live Scoreboard</h2>
-            <div className="flex items-center space-x-2 text-sm">
-              <span className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span>LIVE</span>
-              </span>
-              <span className="text-gray-300">|</span>
-              <span>Best of {match.format}</span>
-            </div>
-          </div>
-        </div>
-      )}
       
-      {/* Main Scoreboard */}
-      <div className="broadcast-bg text-white p-8 min-h-[400px]">
+      {/* Clean Scoreboard with Sponsor */}
+      <div className="text-white p-6">
         
-        {/* Team Logos and Names */}
-        <div className="grid grid-cols-3 gap-4 items-center mb-8">
-          {/* Home Team */}
-          <div className="text-center">
-            <div className="w-20 h-20 mx-auto mb-3 bg-gray-700 rounded-full flex items-center justify-center border-2 border-gray-600">
-              {homeTeam?.logoPath ? (
-                <img 
-                  src={homeTeam.logoPath} 
-                  alt={homeTeam.name}
-                  className="w-full h-full object-cover rounded-full"
-                />
-              ) : (
-                <i className="fas fa-volleyball-ball text-2xl text-gray-400"></i>
-              )}
-            </div>
-            <h3 className="text-xl font-condensed font-bold">{homeTeam?.name || 'HOME'}</h3>
-            <p className="text-sm text-gray-300">{homeTeam?.location || ''}</p>
-          </div>
+        {/* Flex container for sponsor and scoreboard */}
+        <div className="flex items-center gap-8">
           
-          {/* VS Indicator */}
-          <div className="text-center">
-            <div className="text-4xl font-condensed font-black text-secondary">VS</div>
-          </div>
-          
-          {/* Away Team */}
-          <div className="text-center">
-            <div className="w-20 h-20 mx-auto mb-3 bg-gray-700 rounded-full flex items-center justify-center border-2 border-gray-600">
-              {awayTeam?.logoPath ? (
+          {/* Sponsor Logo - Left side */}
+          {settings?.sponsorLogoPath && (
+            <div className="flex-shrink-0">
+              <div className="h-full flex items-center justify-center bg-black/80 rounded-lg p-4 backdrop-blur-sm">
                 <img 
-                  src={awayTeam.logoPath} 
-                  alt={awayTeam.name}
-                  className="w-full h-full object-cover rounded-full"
+                  src={settings.sponsorLogoPath}
+                  alt="Sponsor"
+                  className="max-h-24 max-w-[180px] object-contain"
                 />
-              ) : (
-                <i className="fas fa-volleyball-ball text-2xl text-gray-400"></i>
-              )}
-            </div>
-            <h3 className="text-xl font-condensed font-bold">{awayTeam?.name || 'AWAY'}</h3>
-            <p className="text-sm text-gray-300">{awayTeam?.location || ''}</p>
-          </div>
-        </div>
-        
-        {/* Current Set Score */}
-        <div className="grid grid-cols-3 gap-4 items-center mb-6">
-          <div className="text-center">
-            <div className="text-6xl font-condensed font-black text-white score-animate">
-              {gameState?.homeScore || 0}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-semibold text-gray-300">
-              SET {match.currentSet}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-6xl font-condensed font-black text-white score-animate">
-              {gameState?.awayScore || 0}
-            </div>
-          </div>
-        </div>
-        
-        {/* Match Score (Sets Won) */}
-        <div className="grid grid-cols-3 gap-4 items-center mb-6">
-          <div className="text-center">
-            <div className="text-2xl font-condensed font-bold text-secondary">
-              {match.homeSetsWon}
-            </div>
-            <div className="text-sm text-gray-400">SETS WON</div>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-1 bg-gray-600 mx-auto"></div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-condensed font-bold text-secondary">
-              {match.awaySetsWon}
-            </div>
-            <div className="text-sm text-gray-400">SETS WON</div>
-          </div>
-        </div>
-        
-        {/* Previous Sets Score History */}
-        {gameState?.displayOptions?.showSetHistory && match.setHistory && (
-          <div className="border-t border-gray-600 pt-4">
-            <h4 className="text-center text-sm font-semibold text-gray-300 mb-3">SET HISTORY</h4>
-            {match.setHistory.map((set: any, index: number) => (
-              <div key={index} className="grid grid-cols-4 gap-2 text-center text-sm mb-2">
-                <div className="text-gray-400">Set {set.setNumber}</div>
-                <div className="font-bold">{set.homeScore}</div>
-                <div className="font-bold">{set.awayScore}</div>
-                <div className={set.winner ? "text-green-400" : "text-yellow-400"}>
-                  <i className={`fas ${set.winner ? 'fa-check' : 'fa-play'}`}></i>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        
-        {/* Sponsor Logo Area */}
-        {gameState?.displayOptions?.showSponsors && (
-          <div className="mt-6 text-center">
-            <div className="inline-flex items-center space-x-4 text-xs text-gray-400">
-              <span>Powered by</span>
-              <div className="w-16 h-8 bg-gray-700 rounded flex items-center justify-center">
-                <span className="text-xs">LOGO</span>
               </div>
             </div>
+          )}
+          
+          {/* Clean Score Grid */}
+          <div className="flex-1 bg-black/80 rounded-lg p-4 backdrop-blur-sm">
+            <div className="grid gap-3">
+            
+            {/* Home team row */}
+            <div className="grid grid-cols-6 gap-4 items-center py-3">
+              <div className="flex items-center space-x-3">
+                {homeTeam?.logoPath ? (
+                  <img 
+                    src={homeTeam.logoPath} 
+                    alt={homeTeam.name}
+                    className="w-8 h-8 object-contain"
+                  />
+                ) : (
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                    style={{ backgroundColor: homeTeam?.primaryColor || '#1565C0' }}
+                  >
+                    {(homeTeam?.name || 'HOME').charAt(0)}
+                  </div>
+                )}
+                <div className="text-lg font-semibold text-white tracking-wide">{homeTeam?.name || 'HOME'}</div>
+              </div>
+              {Array.from({ length: setsToShow }, (_, setIndex) => {
+                const setNumber = setIndex + 1;
+                const setData = match.setHistory?.find((s: any) => s.setNumber === setNumber);
+                const isCurrentSet = setNumber === match.currentSet;
+                const homeScore = isCurrentSet ? gameState?.homeScore || 0 : setData?.homeScore || 0;
+                const awayScore = isCurrentSet ? gameState?.awayScore || 0 : setData?.awayScore || 0;
+                const homeWon = !isCurrentSet && setData && homeScore > awayScore;
+                
+                return (
+                  <div 
+                    key={setIndex} 
+                    className={`text-center text-2xl font-bold py-2 px-3 rounded ${
+                      isCurrentSet 
+                        ? 'bg-orange-500 text-white' 
+                        : homeWon 
+                          ? 'text-white'
+                          : 'text-gray-200'
+                    }`}
+                    style={{
+                      backgroundColor: isCurrentSet 
+                        ? '#F59E0B' 
+                        : homeWon 
+                          ? homeTeam?.primaryColor || '#1565C0'
+                          : 'transparent'
+                    }}
+                  >
+                    {homeScore || (isCurrentSet ? 0 : '-')}
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Away team row */}
+            <div className="grid grid-cols-6 gap-4 items-center py-3">
+              <div className="flex items-center space-x-3">
+                {awayTeam?.logoPath ? (
+                  <img 
+                    src={awayTeam.logoPath} 
+                    alt={awayTeam.name}
+                    className="w-8 h-8 object-contain"
+                  />
+                ) : (
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                    style={{ backgroundColor: awayTeam?.primaryColor || '#1565C0' }}
+                  >
+                    {(awayTeam?.name || 'AWAY').charAt(0)}
+                  </div>
+                )}
+                <div className="text-lg font-semibold text-white tracking-wide">{awayTeam?.name || 'AWAY'}</div>
+              </div>
+              {Array.from({ length: setsToShow }, (_, setIndex) => {
+                const setNumber = setIndex + 1;
+                const setData = match.setHistory?.find((s: any) => s.setNumber === setNumber);
+                const isCurrentSet = setNumber === match.currentSet;
+                const homeScore = isCurrentSet ? gameState?.homeScore || 0 : setData?.homeScore || 0;
+                const awayScore = isCurrentSet ? gameState?.awayScore || 0 : setData?.awayScore || 0;
+                const awayWon = !isCurrentSet && setData && awayScore > homeScore;
+                
+                return (
+                  <div 
+                    key={setIndex} 
+                    className={`text-center text-2xl font-bold py-2 px-3 rounded ${
+                      isCurrentSet 
+                        ? 'bg-orange-500 text-white' 
+                        : awayWon 
+                          ? 'text-white'
+                          : 'text-gray-200'
+                    }`}
+                    style={{
+                      backgroundColor: isCurrentSet 
+                        ? '#F59E0B' 
+                        : awayWon 
+                          ? awayTeam?.primaryColor || '#1565C0'
+                          : 'transparent'
+                    }}
+                  >
+                    {awayScore || (isCurrentSet ? 0 : '-')}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        )}
+          </div>
+        </div>
       </div>
     </Card>
   );

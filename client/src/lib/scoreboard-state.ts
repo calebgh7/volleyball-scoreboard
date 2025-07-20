@@ -38,18 +38,26 @@ export const decrementScore = async (team: 'home' | 'away', matchId: number, cur
 };
 
 export const resetCurrentSet = async (matchId: number) => {
-  await queryClient.fetchQuery({
-    queryKey: [`/api/game-state/${matchId}`],
-    queryFn: async () => {
-      const response = await fetch(`/api/game-state/${matchId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ homeScore: 0, awayScore: 0 })
-      });
-      if (!response.ok) throw new Error('Failed to reset scores');
-      return response.json();
-    }
+  if (!matchId || isNaN(matchId)) {
+    throw new Error('Invalid match ID');
+  }
+  
+  console.log('Resetting scores for match ID:', matchId);
+  
+  const response = await fetch(`/api/game-state/${matchId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ homeScore: 0, awayScore: 0 })
   });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Reset API error:', errorText);
+    throw new Error(`Failed to reset scores: ${response.status} ${response.statusText}`);
+  }
+  
+  const result = await response.json();
+  console.log('Reset result:', result);
   
   queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
 };

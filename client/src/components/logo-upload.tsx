@@ -22,7 +22,8 @@ export default function LogoUpload({ teamId, currentLogo, label }: LogoUploadPro
       toast({
         title: "Error",
         description: "Please select an image file",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
       return;
     }
@@ -31,7 +32,8 @@ export default function LogoUpload({ teamId, currentLogo, label }: LogoUploadPro
       toast({
         title: "Error", 
         description: "File size must be less than 2MB",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
       return;
     }
@@ -54,13 +56,15 @@ export default function LogoUpload({ teamId, currentLogo, label }: LogoUploadPro
       queryClient.invalidateQueries({ queryKey: ['/api/current-match'] });
       toast({
         title: "Success",
-        description: "Logo uploaded successfully"
+        description: "Logo uploaded successfully",
+        duration: 2000
       });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to upload logo",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
     } finally {
       setIsUploading(false);

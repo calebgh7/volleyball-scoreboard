@@ -7,6 +7,8 @@ export const teams = pgTable("teams", {
   name: text("name").notNull(),
   location: text("location"),
   logoPath: text("logo_path"),
+  primaryColor: text("primary_color").default("#1565C0"),
+  secondaryColor: text("secondary_color").default("#90CAF9"),
 });
 
 export const matches = pgTable("matches", {

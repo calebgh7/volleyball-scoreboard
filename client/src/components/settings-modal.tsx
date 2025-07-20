@@ -15,6 +15,14 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { Building, Palette } from "lucide-react";
 
+interface Settings {
+  id?: number;
+  sponsorLogoPath?: string;
+  primaryColor?: string;
+  accentColor?: string;
+  theme?: string;
+}
+
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -24,7 +32,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
 
-  const { data: settings } = useQuery({
+  const { data: settings } = useQuery<Settings>({
     queryKey: ['/api/settings'],
     enabled: isOpen,
   });
@@ -93,14 +101,16 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       
       toast({
         title: "Success",
-        description: "Settings updated successfully"
+        description: "Settings updated successfully",
+        duration: 2000
       });
       onClose();
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update settings",
-        variant: "destructive"
+        variant: "destructive",
+        duration: 3000
       });
     } finally {
       setIsUpdating(false);

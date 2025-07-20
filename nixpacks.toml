@@ -1,0 +1,5 @@
+{
+  "providers": ["node"],
+  "buildCmd": "npm run build",
+  "startCmd": "npm start"
+}
