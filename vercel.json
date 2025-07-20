@@ -1,24 +1,11 @@
 {
-  "version": 2,
-  "buildCommand": "cd client && npm run build",
+  "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/dist",
-  "routes": [
+  "framework": null,
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/server/index.ts"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "builds": [
-    {
-      "src": "server/index.ts",
-      "use": "@vercel/node"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
